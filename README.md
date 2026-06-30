@@ -40,7 +40,3 @@ pip install -r requirements.txt
 ```bash
 python main.py
 ```
-
-## Ghi chú
-
-Không đưa các thư mục `__pycache__` hoặc file `.pyc` lên GitHub vì đây là file tự sinh khi chạy Python.
