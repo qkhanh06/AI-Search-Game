@@ -36,8 +36,8 @@ class MainApp:
         self.algo_names = {
             1: ["BFS (Mù - O(V+E))", "DFS (Mù - Dò sâu)", "UCS (Chi phí đồng đều)"],
             2: ["Greedy BFS (Heuristic)", "A* (Tối ưu)", "IDA* (O(bd) Tiết kiệm RAM)"],
-            3: ["Hill Climbing", "Simulated Annealing", "Local Beam Search"],
-            4: ["Belief State Search", "And Or", "Luyện thép"],
+            3: ["Hill Climbing", "Stochastic Hill Climbing", "Local Beam Search"], # <-- Đã đổi
+            4: ["Belief State Search", "And Or", "Simulated Annealing"],         # <-- Đã đổi
             5: ["Backtracking", "Forward Checking", "Min-Conflicts"],
             6: ["Minimax", "Alpha Beta", "Expectimax"]
         }
@@ -119,13 +119,13 @@ class MainApp:
             
         elif self.current_stage == 3:
             if self.selected_algo == 0: path, visited = AIEngine.solve_hill_climbing(tuple(state.player_pos), state.grid_map, GRID_SIZE)
-            elif self.selected_algo == 1: path, visited = AIEngine.solve_simulated_annealing(tuple(state.player_pos), state.grid_map, GRID_SIZE)
+            elif self.selected_algo == 1: path, visited = AIEngine.solve_stochastic_hill_climbing(tuple(state.player_pos), state.grid_map, GRID_SIZE) 
             elif self.selected_algo == 2: path, visited = AIEngine.solve_local_beam_search(tuple(state.player_pos), state.grid_map, GRID_SIZE)
             
         elif self.current_stage == 4:
             if self.selected_algo == 0: path, visited = AIEngine.solve_belief_state(tuple(state.player_pos), state.goal_pos, state.grid_map, GRID_SIZE)
             elif self.selected_algo == 1: path, visited = AIEngine.solve_and_or_search(tuple(state.player_pos), state.goal_pos, state.grid_map, GRID_SIZE)
-            elif self.selected_algo == 2: path, visited = AIEngine.solve_luyen_thep(tuple(state.player_pos), state.goal_pos, state.grid_map, GRID_SIZE)
+            elif self.selected_algo == 2: path, visited = AIEngine.solve_simulated_annealing(tuple(state.player_pos), state.goal_pos, state.grid_map, GRID_SIZE)
             
         elif self.current_stage == 5:
             if self.selected_algo == 0:
@@ -434,8 +434,8 @@ class MainApp:
 
                             elif self.current_stage == 4:
                                 state.step_count += 1
-                              #   if state.step_count % 3 == 0:
-                                  #   state.shuffle_walls()
+                                if state.step_count % 3 == 0:
+                                    state.shuffle_walls()
                                 if state.grid_map[ny][nx] == 1:
                                     self.stats["Chi phí"] += 20
                                     state.grid_map[ny][nx] = 0
@@ -553,7 +553,7 @@ class MainApp:
 
                             elif self.current_stage == 4:
                                 state.step_count += 1
-                                # if state.step_count % 3 == 0: state.shuffle_walls()
+                                if state.step_count % 3 == 0: state.shuffle_walls()
                                 px, py = state.player_pos
                                 if state.grid_map[py][px] == 1:
                                     self.stats["Chi phí"] += 20
