@@ -193,17 +193,26 @@ class Stage4State(BaseStageState):
 
     def shuffle_walls(self):
         wall_count = sum(row.count(1) for row in self.grid_map)
+        
+        # Lấy toạ độ đích thực sự hiện tại thay vì gắn cứng (14, 14)
+        gx, gy = self.goal_pos 
+        
         for r in range(GRID_SIZE):
             for c in range(GRID_SIZE): 
-                if (c, r) != (14, 14): self.grid_map[r][c] = 0
-                else: self.grid_map[r][c] = 2 
+                if (c, r) != (gx, gy): 
+                    self.grid_map[r][c] = 0
+                else: 
+                    self.grid_map[r][c] = 2 
         
         placed = 0
         px, py = self.player_pos
         while placed < wall_count:
             r, c = random.randint(0, GRID_SIZE-1), random.randint(0, GRID_SIZE-1)
+            
+            # Không đặt tường đè lên khu vực của người chơi
             if abs(c - px) <= 1 and abs(r - py) <= 1: continue
-            if (c, r) == (14, 14): continue
+            # Không đặt tường đè lên đích
+            if (c, r) == (gx, gy): continue
             
             if self.grid_map[r][c] == 0:
                 self.grid_map[r][c] = 1

@@ -228,29 +228,32 @@ class AIEngine:
         return path, visited
 
     @staticmethod
-    def solve_simulated_annealing(start, grid_map, grid_size):
+    def solve_stochastic_hill_climbing(start, grid_map, grid_size):
+        """
+        Stochastic Hill Climbing: Thay vì chọn hàng xóm tốt nhất, 
+        nó lọc ra TẤT CẢ các hàng xóm tốt hơn hiện tại, rồi chọn NGẪU NHIÊN một bước.
+        """
         curr = start
         path = [curr]
         visited = [curr]
-        T = 100.0
-        min_T = 0.01
-        cooling_rate = 0.95
-        while T > min_T:
+        while True:
             neighbors = AIEngine.get_neighbors(curr, grid_map, grid_size, allow_diagonals=True)
             if not neighbors: break
-            next_node = random.choice(neighbors)
-            delta = grid_map[next_node[1]][next_node[0]] - grid_map[curr[1]][curr[0]]
-            if delta > 0 or random.random() < math.exp(delta / T):
-                curr = next_node
+            
+            curr_val = grid_map[curr[1]][curr[0]]
+            better_neighbors = []
+            
+            for n in neighbors:
+                val = grid_map[n[1]][n[0]]
+                if val > curr_val:
+                    better_neighbors.append(n)
+                    
+            if better_neighbors:
+                curr = random.choice(better_neighbors) # Chọn ngẫu nhiên hướng đi lên
                 path.append(curr)
                 visited.append(curr)
             else:
-                best_n = max(neighbors, key=lambda x: grid_map[x[1]][x[0]])
-                if grid_map[best_n[1]][best_n[0]] > grid_map[curr[1]][curr[0]]:
-                    curr = best_n
-                    path.append(curr)
-                    visited.append(curr)
-            T *= cooling_rate
+                break # Lên tới đỉnh cục bộ thì dừng
         return path, visited
 
     @staticmethod
@@ -385,12 +388,9 @@ class AIEngine:
         return [], visited_order
 
     @staticmethod
-    def solve_luyen_thep(start, goal, grid_map, grid_size):
+    def solve_simulated_annealing(start, goal, grid_map, grid_size):
         """
-        Simulated Annealing cho môi trường ảo ảnh.
-        Thuật toán có yếu tố ngẫu nhiên, đôi khi chấp nhận bước đi kém hơn
-        để tránh bị kẹt. Nếu chưa tới đích, nối phần còn lại bằng A*
-        để đảm bảo demo có thể hoàn thành.
+        Đổi tên từ solve_luyen_thep sang solve_simulated_annealing
         """
         current = start
         path = [current]
@@ -428,7 +428,6 @@ class AIEngine:
             if T < min_T:
                 break
 
-        # Nối phần còn lại bằng A* để đảm bảo màn chơi có thể hoàn thành.
         tail_path, tail_visited = AIEngine.solve_a_star(current, goal, grid_map, grid_size)
 
         if tail_path:
